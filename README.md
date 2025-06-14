@@ -6,9 +6,53 @@ constructor injection and a declarative attribute-based mapping. It targets
 
 ## Why Oxbind?
 
-- **Type-Safe Mapping**: Clear correspondence between XML schema and C# classes
-- **Constructor-Driven**: Promotes immutable object design
-- **Declarative Mapping**: Simple configuration through C# attributes
+### 🏎️ High Performance XML Deserialization
+
+Oxbind is ~30% faster than System.Xml.Serialization&dagger;&ddagger;:
+
+|                  | Oxbind | System.Xml.Serialization |
+| :---             | ---:   | ---: |
+| macOS Apple M4   | 134 ms | 190 ms |
+
+> [See Live Demo](https://dotnetfiddle.net/AcH1Iz)
+
+> &dagger; [約700 KBのXMLファイル][rows.xml]を100回デシリアライズするベンチマークの結果。
+> 100 iterations over real-world XML dataset with ~N `<row>` elements.
+> XMLの構造の概要を次に示す:
+
+```xml
+<response>
+  <row>
+    <row _id="…" _uuid="…" _position="0" _address="…">
+      <draw_date>2020-09-25T00:00:00</draw_date>
+      <winning_numbers>20 36 37 48 67</winning_numbers>
+      <mega_ball>16</mega_ball>
+      <multiplier>02</multiplier>
+    </row>
+    <row _id="…" _uuid="…" _position="0" _address="…">
+      <draw_date>2020-09-29T00:00:00</draw_date>
+      <winning_numbers>14 39 43 44 67</winning_numbers>
+      <mega_ball>19</mega_ball>
+      <multiplier>03</multiplier>
+    </row>
+    ⋮
+</response>
+```
+
+> &ddagger; 生成するオブジェクトの個数（構造）が同じ条件で比較した場合。
+> System.Xml.Serializationでは属性をもたない`<foo>TEXT</foo>`のような
+> 子要素を`string`の型のフィールドにマッピングすることで、生成するオブジェクトの
+> 個数を減らすことができる。生成するオブジェクトの個数が少なくなると、劇的に
+> 実行時間は減少する。
+
+### 🚀 Developer Experience
+
+- **Less Boilerplate**: No need for setter properties or parameterless
+  constructors
+- **Immutable by Design**: Constructor injection promotes safer, more
+  maintainable code
+- **Modern C# Support**: Native support for records, nullable reference types,
+  and primary constructors
 - **Detailed Error Reporting**: Error messages with XML line and column
   information
 
@@ -241,7 +285,7 @@ list, which has a single, defined signature.
 Oxbind is available as [the ![NuGet-logo][nuget-logo] NuGet
 package][nuget-oxbind].
 
-### Install
+### 📦 Install
 
 ```plaintext
 dotnet add package Maroontress.Oxbind
@@ -287,3 +331,4 @@ reportgenerator -reports:MsTestResults/*/coverage.cobertura.xml \
 [dotnet-sdk]: https://dotnet.microsoft.com/en-us/download
 [nuget-logo]: https://maroontress.github.io/images/NuGet-logo.png
 [nuget-oxbind]: https://www.nuget.org/packages/Maroontress.Oxbind/
+[rows.xml]: https://data.ny.gov/api/views/5xaw-6ayf/rows.xml
