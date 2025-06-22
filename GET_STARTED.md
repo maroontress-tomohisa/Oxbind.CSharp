@@ -6,15 +6,16 @@ specification flow and rules for first-time users.
 
 ### Attribute Reference Table
 
-| Attribute      | Target                | Purpose                                                           |
-| :---           | :---                  | :---                                                              |
-| `ForElement`   | Class                 | Associates a class with an XML element name                       |
-| `ForAttribute` | Constructor parameter | Binds a constructor parameter to an XML attribute                 |
-| `Required`     | Constructor parameter | Binds a required child element (must appear once)                 |
-| `Optional`     | Constructor parameter | Binds an optional child element (0 or 1 occurrence)               |
-| `Multiple`     | Constructor parameter | Binds a repeatedly occurring child element (0 or more times)      |
-| `ForText`      | Constructor parameter | Binds the element’s text content to a parameter                   |
-| `Ignored`      | Constructor           | Marks a constructor that Oxbind should ignore for deserialization |
+| Attribute         | Target                | Purpose                                                           |
+| :---              | :---                  | :---                                                              |
+| `ForElement`      | Class                 | Associates a class with an XML element name                       |
+| `ForAttribute`    | Constructor parameter | Binds a constructor parameter to an XML attribute                 |
+| `Required`        | Constructor parameter | Binds a required child element (must appear once)                 |
+| `Optional`        | Constructor parameter | Binds an optional child element (0 or 1 occurrence)               |
+| `Multiple`        | Constructor parameter | Binds a repeatedly occurring child element (0 or more times)      |
+| `ForChildElement` | Constructor parameter | Binds a child element that only contains text content             |
+| `ForText`         | Constructor parameter | Binds the element’s text content to a parameter                   |
+| `Ignored`         | Constructor           | Marks a constructor that Oxbind should ignore for deserialization |
 
 ## 1. Basic Steps
 
@@ -176,10 +177,18 @@ The order and combination of parameters follow this BNF:
                             | <optional-element>
                             | <multiple-elements>) <parameter-name> }*
 
-<required-element>     ::= [Required] (<element-type> | BindResult<<element-type>>)
-<optional-element>     ::= [Optional] (<element-type>? | BindResult<<element-type>>?)
+<required-element>     ::= [Required] (<element-type>
+                                     | BindResult<<element-type>>
+                                     | [ForChildElement] string
+                                     | [ForChildElement] BindResult<string>)
+<optional-element>     ::= [Optional] (<element-type>?
+                                     | BindResult<<element-type>>?
+                                     | [ForChildElement] string?
+                                     | [ForChildElement] BindResult<string>?)
 <multiple-elements>    ::= [Multiple] (IEnumerable<<element-type>>
-                                     | IEnumerable<BindResult<<element-type>>>)
+                                     | IEnumerable<BindResult<<element-type>>>
+                                     | [ForChildElement] IEnumerable<string>
+                                     | [ForChildElement] IEnumerable<BindResult<string>>)
 
 ; <parameter-name> is a valid C# parameter name.
 ; <element-type> refers to a class marked with [ForElement].
